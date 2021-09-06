@@ -1,0 +1,50 @@
+.not-found-bg-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #000000;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+.image {
+  width: 85%;
+  height: 30%;
+  max-height: 350px;
+  max-width: 450px;
+}
+@media screen and (min-width: 768px) {
+  .image {
+    margin-top: 100px;
+  }
+}
+
+.not-found-heading {
+  color: #ffffff;
+  font-family: 'Roboto';
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+}
+@media screen and (min-width: 768px) {
+  .not-found-heading {
+    font-size: 44px;
+  }
+}
+
+.not-found-description {
+  color: #cbd5e1;
+  font-family: 'Roboto';
+  font-size: 16px;
+  font-weight: 200;
+  text-align: center;
+  line-height: 1.5;
+}
+@media screen and (min-width: 768px) {
+  .not-found-description {
+    font-size: 22px;
+    line-height: 1;
+  }
+}
