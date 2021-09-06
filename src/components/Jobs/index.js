@@ -124,7 +124,8 @@ class Jobs extends Component {
         Authorization: `Bearer ${jwtToken}`,
       },
     }
-    const empType = employmentType.join(',')
+
+    const empType = employmentType.join()
     const response = await fetch(
       `https://apis.ccbp.in/jobs?employment_type=${empType}&minimum_package=${salaryRange}&search=${searchInput}`,
       options,
@@ -148,12 +149,24 @@ class Jobs extends Component {
     )
   }
 
+  onClickSearch = () => {
+    this.setState({jobsApiStatus: jobsApiStatusConst.loading}, this.getJobsApi)
+  }
+
   onChangeSearchInput = event => {
     this.setState({searchInput: event.target.value})
   }
 
   onChangeCheckbox = event => {
-    this.setState({salaryRangesList: 'd'})
+    const {employmentType} = this.state
+    const index = employmentType.indexOf(event.target.value)
+    if (index === -1) {
+      employmentType.push(event.target.value)
+      this.setState({employmentType})
+    } else {
+      employmentType.pop(event.target.value)
+      this.setState({employmentType})
+    }
   }
 
   onChangeRadio = event => {
@@ -392,6 +405,7 @@ class Jobs extends Component {
                     type="button"
                     testid="searchButton"
                     className="search-button-first"
+                    onClick={this.onClickSearch}
                   >
                     <BsSearch className="search-icon-first" />
                   </button>
@@ -409,7 +423,7 @@ class Jobs extends Component {
             <div className="second-container">
               <div className="second-search-container">
                 <input
-                  type="text"
+                  type="search"
                   value={searchInput}
                   placeholder="Search"
                   onChange={this.onChangeSearchInput}
@@ -421,6 +435,7 @@ class Jobs extends Component {
                     type="button"
                     testid="searchButton"
                     className="search-button-second"
+                    onClick={this.onClickSearch}
                   >
                     <BsSearch className="search-icon-second" />
                   </button>
