@@ -9,7 +9,7 @@
 .jobs-spacing-container {
   width: 90%;
   height: 100%;
-  margin-top: 90px;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -17,7 +17,7 @@
 }
 @media screen and (min-width: 768px) {
   .jobs-spacing-container {
-    margin-top: 100px;
+    margin-top: auto;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
@@ -175,30 +175,6 @@
   }
 }
 
-.list-item {
-  margin-top: 8px;
-}
-
-.checkbox-button {
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-.radio-button {
-  cursor: pointer;
-  margin-right: 8px;
-}
-.label {
-  color: #ffffff;
-  font-family: 'Roboto';
-  font-size: 14px;
-  font-weight: 400;
-}
-@media screen and (min-width: 768px) {
-  .label {
-    font-size: 15px;
-  }
-}
 .rule {
   width: 100%;
   border: 1px solid #2c364c;

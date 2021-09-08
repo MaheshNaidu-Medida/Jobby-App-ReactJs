@@ -9,6 +9,8 @@ import Header from '../Header'
 import JobItem from '../JobItem'
 
 import './index.css'
+import SalaryRangeItem from '../SalaryRangeItem'
+import EmploymentTypeItem from '../EmploymentTypeItem'
 
 const employmentTypesList = [
   {
@@ -301,19 +303,11 @@ class Jobs extends Component {
     <ul className="list-container">
       <h1 className="list-heading">Salary Range</h1>
       {salaryRangesList.map(eachItem => (
-        <li className="list-item" key={eachItem.salaryRangeId}>
-          <input
-            type="radio"
-            name="salary"
-            value={eachItem.salaryRangeId}
-            id={eachItem.salaryRangeId}
-            className="radio-button"
-            onClick={this.onChangeRadio}
-          />
-          <label htmlFor={eachItem.salaryRangeId} className="label">
-            {eachItem.label}
-          </label>
-        </li>
+        <SalaryRangeItem
+          key={eachItem.salaryRangeId}
+          salaryRangeDetails={eachItem}
+          onChangeRadio={this.onChangeRadio}
+        />
       ))}
     </ul>
   )
@@ -322,19 +316,11 @@ class Jobs extends Component {
     <ul className="list-container">
       <h1 className="list-heading">Type of Employment</h1>
       {employmentTypesList.map(eachItem => (
-        <li className="list-item" key={eachItem.employmentTypeId}>
-          <input
-            type="checkbox"
-            value={eachItem.employmentTypeId}
-            onClick={this.onChangeCheckbox}
-            id={eachItem.employmentTypeId}
-            name={eachItem.employmentTypeId}
-            className="checkbox-button"
-          />
-          <label htmlFor={eachItem.employmentTypeId} className="label">
-            {eachItem.label}
-          </label>
-        </li>
+        <EmploymentTypeItem
+          key={eachItem.employmentTypeId}
+          employmentTypeDetails={eachItem}
+          onChangeCheckbox={this.onChangeCheckbox}
+        />
       ))}
     </ul>
   )

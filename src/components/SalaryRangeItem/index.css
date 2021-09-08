@@ -1,0 +1,18 @@
+.list-item {
+  margin-top: 8px;
+}
+.radio-button {
+  cursor: pointer;
+  margin-right: 8px;
+}
+.label {
+  color: #ffffff;
+  font-family: 'Roboto';
+  font-size: 14px;
+  font-weight: 400;
+}
+@media screen and (min-width: 768px) {
+  .label {
+    font-size: 15px;
+  }
+}
