@@ -1,3 +1,5 @@
+import {Link} from 'react-router-dom'
+
 import Cookies from 'js-cookie'
 
 import Header from '../Header'
@@ -26,13 +28,15 @@ const Home = props => {
             company reviews. Find the job that fits your abilities and
             potential.
           </p>
-          <button
-            type="button"
-            className="find-button"
-            onClick={onClickFindJobs}
-          >
-            Find Jobs
-          </button>
+          <Link to="/jobs" className="link">
+            <button
+              type="button"
+              className="find-button"
+              onClick={onClickFindJobs}
+            >
+              Find Jobs
+            </button>
+          </Link>
         </div>
       </div>
     </>

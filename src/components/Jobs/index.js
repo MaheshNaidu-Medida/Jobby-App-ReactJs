@@ -1,13 +1,12 @@
 import {Component} from 'react'
 import Cookies from 'js-cookie'
-import {Link} from 'react-router-dom'
+
 import Loader from 'react-loader-spinner'
 
-import {IoLocationSharp} from 'react-icons/io5'
-import {BsSearch, BsBriefcaseFill} from 'react-icons/bs'
-import {AiFillStar} from 'react-icons/ai'
+import {BsSearch} from 'react-icons/bs'
 
 import Header from '../Header'
+import JobItem from '../JobItem'
 
 import './index.css'
 
@@ -125,7 +124,7 @@ class Jobs extends Component {
       },
     }
 
-    const empType = employmentType.join()
+    const empType = employmentType.join(',')
     const response = await fetch(
       `https://apis.ccbp.in/jobs?employment_type=${empType}&minimum_package=${salaryRange}&search=${searchInput}`,
       options,
@@ -162,20 +161,34 @@ class Jobs extends Component {
     const index = employmentType.indexOf(event.target.value)
     if (index === -1) {
       employmentType.push(event.target.value)
-      this.setState({employmentType})
+      this.setState(
+        {employmentType, jobsApiStatus: jobsApiStatusConst.loading},
+        this.getJobsApi,
+      )
     } else {
       employmentType.pop(event.target.value)
-      this.setState({employmentType})
+      this.setState(
+        {employmentType, jobsApiStatus: jobsApiStatusConst.loading},
+        this.getJobsApi,
+      )
     }
   }
 
   onChangeRadio = event => {
-    this.setState({salaryRange: event.target.value})
+    this.setState(
+      {
+        salaryRange: event.target.value,
+        jobsApiStatus: jobsApiStatusConst.loading,
+      },
+      this.getJobsApi,
+    )
   }
 
   renderLoader = () => (
-    <div className="loader-container" testid="loader">
-      <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
+    <div className="profile-container">
+      <div className="loader-container" testid="loader">
+        <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
+      </div>
     </div>
   )
 
@@ -222,68 +235,6 @@ class Jobs extends Component {
     this.setState({jobsApiStatus: jobsApiStatusConst.loading}, this.getJobsApi)
   }
 
-  renderJobItem = jobItem => {
-    const {
-      companyLogoUrl,
-      employmentType,
-      jobDescription,
-      location,
-      packagePerAnnum,
-      rating,
-      title,
-      id,
-    } = jobItem
-
-    return (
-      <Link to={`/jobs/${id}`} className="link">
-        <div className="job-container">
-          <div className="job-header">
-            <div className="job-org-role-container">
-              <img
-                src={companyLogoUrl}
-                alt="company logo"
-                className="job-logo"
-              />
-              <div className="job-role-container">
-                <p className="job-role">{title}</p>
-                <div className="job-rating-container">
-                  <div className="star-icon-container">
-                    <AiFillStar className="star-icon" />
-                  </div>
-
-                  <p className="rating">{rating}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="job-loc-type-salary-container">
-              <div className="job-location-type-container">
-                <div className="job-loc-container">
-                  <div>
-                    <IoLocationSharp className="location-icon" />
-                  </div>
-                  <p className="location">{location}</p>
-                </div>
-                <div className="job-type-container">
-                  <div>
-                    <BsBriefcaseFill className="brief-case-icon" />
-                  </div>
-                  <p className="job-type">{employmentType}</p>
-                </div>
-              </div>
-              <div className="job-salary-container">
-                <p className="package">{packagePerAnnum}</p>
-              </div>
-            </div>
-          </div>
-          <hr className="rule" />
-          <h1 className="job-description-heading">Description</h1>
-          <p className="description">{jobDescription}</p>
-        </div>
-      </Link>
-    )
-  }
-
   renderJobsFailure = () => (
     <div className="jobs-failure-container">
       <img
@@ -293,7 +244,7 @@ class Jobs extends Component {
       />
       <h1 className="jobs-failure-heading">Oops! Something Went Wrong</h1>
       <p className="jobs-failure-description">
-        We cannot seem to find the page you are looking for.
+        We cannot seem to find the page you are looking for
       </p>
       <button
         className="retry-button"
@@ -305,27 +256,31 @@ class Jobs extends Component {
     </div>
   )
 
-  renderNoJobs = () => (
-    <div className="no-jobs-container">
-      <img
-        src="https://assets.ccbp.in/frontend/react-js/no-jobs-img.png"
-        alt="no jobs"
-        className="no-jobs-image"
-      />
-      <h1 className="no-jobs-heading">No Jobs Found</h1>
-      <p className="no-jobs-description">
-        We could not find any jobs. Try other filters.
-      </p>
-    </div>
-  )
-
   renderJobs = () => {
     const {jobsList} = this.state
     if (jobsList.length === 0) {
-      return this.renderNoJobs()
+      return (
+        <div className="no-jobs-container">
+          <img
+            src="https://assets.ccbp.in/frontend/react-js/no-jobs-img.png"
+            alt="no jobs"
+            className="no-jobs-image"
+          />
+          <h1 className="no-jobs-heading">No Jobs Found</h1>
+          <p className="no-jobs-description">
+            We could not find any jobs. Try other filters.
+          </p>
+        </div>
+      )
     }
 
-    return jobsList.map(eachJob => this.renderJobItem(eachJob))
+    return (
+      <ul className="jobs-unordered-list">
+        {jobsList.map(eachJob => (
+          <JobItem key={eachJob.id} jobDetails={eachJob} />
+        ))}
+      </ul>
+    )
   }
 
   renderJobContent = () => {
@@ -351,9 +306,9 @@ class Jobs extends Component {
             type="radio"
             name="salary"
             value={eachItem.salaryRangeId}
-            onChange={this.onChangeRadio}
             id={eachItem.salaryRangeId}
             className="radio-button"
+            onClick={this.onChangeRadio}
           />
           <label htmlFor={eachItem.salaryRangeId} className="label">
             {eachItem.label}
@@ -371,7 +326,7 @@ class Jobs extends Component {
           <input
             type="checkbox"
             value={eachItem.employmentTypeId}
-            onChange={this.onChangeCheckbox}
+            onClick={this.onChangeCheckbox}
             id={eachItem.employmentTypeId}
             name={eachItem.employmentTypeId}
             className="checkbox-button"

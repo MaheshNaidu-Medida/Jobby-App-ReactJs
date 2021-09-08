@@ -10,6 +10,8 @@ import {AiFillStar} from 'react-icons/ai'
 import {FaExternalLinkAlt} from 'react-icons/fa'
 
 import Header from '../Header'
+import SimilarJobItem from '../SimilarJobItem'
+import SkillItem from '../SkillItem'
 
 import './index.css'
 
@@ -24,13 +26,18 @@ class JobItemDetails extends Component {
     apiStatus: apiStatusConst.loading,
     fetchedData: {},
     similarJobsData: [],
+    title: 'No Title',
   }
 
   componentDidMount() {
-    this.getJobDetailsApi()
+    const {match} = this.props
+    const {params} = match
+    const {id} = params
+    this.getJobTitle(id)
+    this.getJobDetailsApi(id)
   }
 
-  getJobDetailsApi = async () => {
+  getJobDetailsApi = async id => {
     const jwtToken = Cookies.get('jwt_token')
     const options = {
       method: 'GET',
@@ -38,10 +45,6 @@ class JobItemDetails extends Component {
         Authorization: `Bearer ${jwtToken}`,
       },
     }
-
-    const {match} = this.props
-    const {params} = match
-    const {id} = params
 
     const url = `https://apis.ccbp.in/jobs/${id}`
     const response = await fetch(url, options)
@@ -117,27 +120,18 @@ class JobItemDetails extends Component {
         tentativeTitle = 'No Title'
       }
     }
-    return tentativeTitle
+    this.setState({title: tentativeTitle})
   }
 
   retryJobItemApi = () => {
-    this.setState({apiStatus: apiStatusConst.loading}, this.getJobDetailsApi)
+    const {match} = this.props
+    const {params} = match
+    const {id} = params
+    this.getJobDetailsApi(id)
   }
 
-  renderLoader = () => (
-    <div className="loader-container" testid="loader">
-      <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
-    </div>
-  )
-
-  renderSkillItem = skill => {
-    const {imageUrl, name} = skill
-    return (
-      <li className="skill-item">
-        <img src={imageUrl} alt={name} className="skill-logo" />
-        <p className="skill">{name}</p>
-      </li>
-    )
+  onClickRetry = () => {
+    this.setState({apiStatus: apiStatusConst.loading}, this.retryJobItemApi)
   }
 
   renderLifeAtCompany = lifeAtCompany => {
@@ -155,70 +149,14 @@ class JobItemDetails extends Component {
     )
   }
 
-  renderSimilarJobItem = jobItem => {
-    const {
-      companyLogoUrl,
-      employmentType,
-      jobDescription,
-      id,
-      location,
-      rating,
-      title,
-    } = jobItem
-
-    return (
-      <li key={id} className="similar-job-item">
-        <div className="job-header">
-          <div className="job-org-role-container">
-            <img
-              src={companyLogoUrl}
-              alt="similar job company logo"
-              className="job-logo"
-            />
-            <div className="job-role-container">
-              <p className="job-role">{title}</p>
-              <div className="job-rating-container">
-                <div className="star-icon-container">
-                  <AiFillStar className="star-icon" />
-                </div>
-
-                <p className="rating">{rating}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <h1 className="job-description-heading">Description</h1>
-
-        <p className="description">{jobDescription}</p>
-
-        <div className="job-loc-type-salary-container">
-          <div className="job-location-type-container">
-            <div className="job-loc-container">
-              <div>
-                <IoLocationSharp className="location-icon" />
-              </div>
-              <p className="location">{location}</p>
-            </div>
-            <div className="job-type-container">
-              <div>
-                <BsBriefcaseFill className="brief-case-icon" />
-              </div>
-              <p className="job-type">{employmentType}</p>
-            </div>
-          </div>
-        </div>
-      </li>
-    )
-  }
-
   renderItem = () => {
-    const {fetchedData} = this.state
-    const {similarJobsData} = this.state
+    const {fetchedData, similarJobsData, title} = this.state
+
     const {
       companyLogoUrl,
       companyWebsiteUrl,
       employmentType,
-      id,
+
       jobDescription,
       skills,
       lifeAtCompany,
@@ -227,7 +165,6 @@ class JobItemDetails extends Component {
       rating,
     } = fetchedData
 
-    const title = this.getJobTitle(id)
     return (
       <>
         <Header />
@@ -241,7 +178,7 @@ class JobItemDetails extends Component {
                   className="job-logo"
                 />
                 <div className="job-role-container">
-                  <p className="job-role">{title}</p>
+                  <h1 className="job-role">{title}</h1>
                   <div className="job-rating-container">
                     <div className="star-icon-container">
                       <AiFillStar className="star-icon" />
@@ -287,18 +224,22 @@ class JobItemDetails extends Component {
             </div>
             <p className="description">{jobDescription}</p>
 
-            <h1 className="headings">Skills</h1>
+            <p className="headings">Skills</p>
             <ul className="skill-container">
-              {skills.map(eachSkill => this.renderSkillItem(eachSkill))}
+              {skills.map(eachSkill => (
+                <SkillItem key={eachSkill.name} skillDetails={eachSkill} />
+              ))}
             </ul>
             <h1 className="headings">Life at Company</h1>
             {this.renderLifeAtCompany(lifeAtCompany)}
           </div>
 
           <div className="similar-jobs-container">
-            <h1 className="headings">Similar Jobs</h1>
+            <h1 className="similar-jobs-heading">Similar Jobs</h1>
             <ul className="similar-jobs-list">
-              {similarJobsData.map(each => this.renderSimilarJobItem(each))}
+              {similarJobsData.map(each => (
+                <SimilarJobItem key={each.id} similarJobDetails={each} />
+              ))}
             </ul>
           </div>
         </div>
@@ -317,15 +258,24 @@ class JobItemDetails extends Component {
         />
         <h1 className="jobs-failure-heading">Oops! Something Went Wrong</h1>
         <p className="jobs-failure-description">
-          We cannot seem to find the page you are looking for.
+          We cannot seem to find the page you are looking for
         </p>
         <button
           className="retry-button"
           type="button"
-          onClick={this.retryJobItemApi}
+          onClick={this.onClickRetry}
         >
           Retry
         </button>
+      </div>
+    </>
+  )
+
+  renderLoader = () => (
+    <>
+      <Header />
+      <div className="loader-container" testid="loader">
+        <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
       </div>
     </>
   )

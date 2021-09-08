@@ -1,4 +1,4 @@
-import {withRouter} from 'react-router-dom'
+import {withRouter, Link} from 'react-router-dom'
 import Cookies from 'js-cookie'
 
 import {AiFillHome} from 'react-icons/ai'
@@ -10,33 +10,6 @@ import './index.css'
 const Header = props => {
   const {history} = props
 
-  const onClickLogo = () => {
-    const jwtToken = Cookies.get('jwt_token')
-    if (jwtToken === undefined) {
-      history.replace('/login')
-    } else {
-      history.replace('/')
-    }
-  }
-
-  const onClickHome = () => {
-    const jwtToken = Cookies.get('jwt_token')
-    if (jwtToken === undefined) {
-      history.replace('/login')
-    } else {
-      history.replace('/')
-    }
-  }
-
-  const onClickJobs = () => {
-    const jwtToken = Cookies.get('jwt_token')
-    if (jwtToken === undefined) {
-      history.replace('/login')
-    } else {
-      history.replace('/jobs')
-    }
-  }
-
   const onClickLogout = () => {
     Cookies.remove('jwt_token')
     history.replace('/login')
@@ -44,50 +17,39 @@ const Header = props => {
 
   return (
     <nav className="navbar">
-      <button
-        className="navbar-logo-container"
-        type="button"
-        onClick={onClickLogo}
-      >
+      <Link to="/" className="link">
         <img
           src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
           alt="website logo"
           className="nav-logo"
         />
-      </button>
-      <div className="navbar-menu-mobile">
-        <button
-          type="button"
-          className="navbar-logo-button"
-          onClick={onClickHome}
-        >
-          <AiFillHome className="nav-menu-icon" />
-        </button>
-        <button
-          type="button"
-          className="navbar-logo-button"
-          onClick={onClickJobs}
-        >
-          <BsBriefcaseFill className="nav-menu-icon" />
-        </button>
-        <button
-          type="button"
-          className="navbar-logo-button"
-          onClick={onClickLogout}
-        >
-          <FiLogOut className="nav-menu-icon" />
-        </button>
-      </div>
+      </Link>
+
+      <ul className="navbar-menu-mobile">
+        <li className="list-item">
+          <Link to="/" className="link">
+            <AiFillHome className="nav-menu-icon" />
+          </Link>
+        </li>
+        <li className="list-item">
+          <Link to="/jobs" className="link">
+            <BsBriefcaseFill className="nav-menu-icon" />
+          </Link>
+        </li>
+        <li className="list-item">
+          <FiLogOut className="nav-menu-icon" onClick={onClickLogout} />
+        </li>
+      </ul>
 
       <div className="navbar-menu">
-        <div className="navbar-nav-items">
-          <button className="navbar-button" type="button" onClick={onClickHome}>
-            Home
-          </button>
-          <button className="navbar-button" type="button" onClick={onClickJobs}>
-            Jobs
-          </button>
-        </div>
+        <ul className="navbar-nav-items">
+          <Link to="/" className="link">
+            <li className="large-link-item">Home</li>
+          </Link>
+          <Link to="/jobs" className="link">
+            <li className="large-link-item">Jobs</li>
+          </Link>
+        </ul>
         <button type="button" className="navbar-logout" onClick={onClickLogout}>
           Logout
         </button>
